@@ -26,7 +26,7 @@ async fn test_route_handler(
 #[tokio::main]
 async fn main() {
     let server = Router::new()
-        .route("/", post(test_route_handler))
+        .route("/api/test", post(test_route_handler))
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));
 
