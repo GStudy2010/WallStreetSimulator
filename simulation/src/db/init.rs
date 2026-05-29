@@ -51,6 +51,18 @@ pub async fn setup_database(db: &PgPool) {
     .execute(db)
     .await
     .expect("Failed to create users table");
+    sqlx::query(
+        "
+        CREATE TABLE IF NOT EXISTS sessions (
+            token TEXT PRIMARY KEY,
+            user_id UUID NOT NULL REFERENCES users(id),
+            expires_at TIMESTAMP NOT NULL
+        )
+        "
+        )
+        .execute(db)
+        .await
+        .expect("Falied to create sessions table");
 
     println!("Database setup complete");
 }

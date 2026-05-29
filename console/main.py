@@ -2,9 +2,7 @@ import requests
 import json
 
 url = "https://graphical-apartment-males-graduates.trycloudflare.com/"
-
-command_list = ["call", "exit", "createuser"]
-
+command_list = ["call", "exit", "createuser", "loginuser"]
 
 def CREATEUSER(data):
     print("Creating user")
@@ -13,23 +11,24 @@ def CREATEUSER(data):
     print(response.status_code)
     print(response.text)
 
-def TESTHANDLE(data):
-    print("Calling a test handle")
-
-    conn_url = url + "api/test"
-
+def LOGINUSER(data):
+    print("Logging in")
+    conn_url = url + "api/loginuser"
     response = requests.post(conn_url, json=data)
-
     print(response.status_code)
     print(response.text)
 
+def TESTHANDLE(data):
+    print("Calling a test handle")
+    conn_url = url + "api/test"
+    response = requests.post(conn_url, json=data)
+    print(response.status_code)
+    print(response.text)
 
 def which_command(command):
     parts = command.split(maxsplit=2)
-
     if parts[0] not in command_list:
         return None, []
-
     return command_list.index(parts[0]), parts[1:]
 
 def creatuserask():
@@ -37,11 +36,20 @@ def creatuserask():
     email = input("Give an email for the user >> ")
     password = input("Give a password for the user >> ")
     data = {
-            "name": name,
-            "email": email,
-            "password": password,
+        "name": name,
+        "email": email,
+        "password": password,
     }
     CREATEUSER(data)
+
+def loginuserask():
+    email = input("Give your email >> ")
+    password = input("Give your password >> ")
+    data = {
+        "email": email,
+        "password": password,
+    }
+    LOGINUSER(data)
 
 def callC(route, data):
     if route == "api/test":
@@ -57,7 +65,6 @@ def callC(route, data):
         except json.JSONDecodeError:
             print("Invalid JSON")
             return
-
 
 def main():
     run = True
@@ -78,4 +85,7 @@ def main():
             return
         elif c == command_list.index("createuser"):
             creatuserask()
+        elif c == command_list.index("loginuser"):
+            loginuserask()
+
 main()

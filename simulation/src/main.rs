@@ -22,6 +22,7 @@ async fn main() {
     let server = Router::new()
         .route("/api/test", post(handlers::apitest::test_route_handler))
         .route("/api/createuser", post(handlers::createuser::create_user_handler))
+        .route("/api/loginuser", post(handlers::loginuser::login_user_handler))
         .route("/api/verifyemail/{token}", get(handlers::verifyemail::verifyemail))
         .with_state(state)
         .layer(CorsLayer::permissive());
