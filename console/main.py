@@ -2,7 +2,8 @@ import requests
 import json
 
 url = "https://graphical-apartment-males-graduates.trycloudflare.com/"
-command_list = ["call", "exit", "createuser", "loginuser"]
+command_list = ["call", "exit", "createuser", "loginuser", "logoutuser"]
+session_token = None
 
 def CREATEUSER(data):
     print("Creating user")
@@ -12,11 +13,32 @@ def CREATEUSER(data):
     print(response.text)
 
 def LOGINUSER(data):
+    global session_token
     print("Logging in")
     conn_url = url + "api/loginuser"
     response = requests.post(conn_url, json=data)
     print(response.status_code)
     print(response.text)
+    try:
+        resp_json = response.json()
+        if "message" in resp_json:
+            session_token = resp_json["message"]
+            print(f"Session token saved: {session_token}")
+    except json.JSONDecodeError:
+        pass
+
+def LOGOUT():
+    global session_token
+    if session_token is None:
+        print("Not logged in")
+        return
+    print("Logging out")
+    conn_url = url + "api/logoutuser"
+    headers = {"Authorization": f"Bearer {session_token}"}
+    response = requests.post(conn_url, headers=headers)
+    print(response.status_code)
+    print(response.text)
+    session_token = None
 
 def TESTHANDLE(data):
     print("Calling a test handle")
@@ -69,7 +91,8 @@ def callC(route, data):
 def main():
     run = True
     while run:
-        command = input("Enter command>> ")
+        logged_in = f"[logged in]" if session_token else "[not logged in]"
+        command = input(f"{logged_in} Enter command>> ")
         c, p = which_command(command)
         if c is None:
             print("No such command")
@@ -87,5 +110,7 @@ def main():
             creatuserask()
         elif c == command_list.index("loginuser"):
             loginuserask()
+        elif c == command_list.index("logout"):
+            LOGOUT()
 
 main()
