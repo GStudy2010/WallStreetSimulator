@@ -1,10 +1,17 @@
 import requests
 import json
 
-url = "https://computed-mens-withdrawal-vcr.trycloudflare.com/"
+url = "https://graphical-apartment-males-graduates.trycloudflare.com/"
 
-command_list = ["call", "exit"]
+command_list = ["call", "exit", "createuser"]
 
+
+def CREATEUSER(data):
+    print("Creating user")
+    conn_url = url + "api/createuser"
+    response = requests.post(conn_url, json=data)
+    print(response.status_code)
+    print(response.text)
 
 def TESTHANDLE(data):
     print("Calling a test handle")
@@ -25,6 +32,16 @@ def which_command(command):
 
     return command_list.index(parts[0]), parts[1:]
 
+def creatuserask():
+    name = input("Give a name for the user >> ")
+    email = input("Give an email for the user >> ")
+    password = input("Give a password for the user >> ")
+    data = {
+            "name": name,
+            "email": email,
+            "password": password,
+    }
+    CREATEUSER(data)
 
 def callC(route, data):
     if route == "api/test":
@@ -34,6 +51,12 @@ def callC(route, data):
             print("Invalid JSON")
             return
         TESTHANDLE(dataJ)
+    if route == "api/createuser":
+        try:
+            dataJ = json.loads(data)
+        except json.JSONDecodeError:
+            print("Invalid JSON")
+            return
 
 
 def main():
@@ -53,4 +76,6 @@ def main():
             callC(route, data)
         elif c == command_list.index("exit"):
             return
+        elif c == command_list.index("createuser"):
+            creatuserask()
 main()

@@ -1,52 +1,29 @@
 use std::net::SocketAddr;
-use axum::routing::post;
-use serde::{Deserialize, Serialize};
-use axum::{Json, Router, http::StatusCode, response::IntoResponse};
+use axum::routing::{post, get};
+use axum::Router;
 use tower_http::cors::CorsLayer;
-use sqlx::{PgPool, postgres::PgPoolOptions};
+mod db;
+mod handlers;
+mod helpers;
 
-#[derive(Clone)]
-pub struct AppState {
-    pub db: PgPool,
-}
-
-#[derive(Debug, Deserialize)]
-struct TestRouteHandlerRequest {
-    test: String,
-}
-#[derive(Debug, Serialize)]
-struct TestRouteHandlerResponse{
-    test: String,
-}
-
-async fn test_route_handler(
-    Json(payload): Json<TestRouteHandlerRequest>,
-    ) -> impl IntoResponse {
-    println!("Test route has been called, the message: {:?}", payload.test);
-    let resp = TestRouteHandlerResponse {
-        test: "Test".to_string(),
-    };
-    (StatusCode::OK, Json(resp))
-}
-
-async fn connect_db(database_url: &str) -> PgPool {
-    PgPoolOptions::new()
-        .max_connections(10)
-        .connect(database_url)
-        .await
-        .expect("Failed to connect")
-}
 
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
+    println!("SMTP_EMAIL: {:?}", std::env::var("SMTP_EMAIL"));
+    println!("SMTP_PASSWORD: {:?}", std::env::var("SMTP_PASSWORD"));
+    println!("DATABASE_URL: {:?}", std::env::var("DATABASE_URL"));
     let database_url = std::env::var("DATABASE_URL").unwrap();
-    let pool = connect_db(&database_url).await;
-    let _state = AppState {
+    let pool = db::init::connect_db(&database_url).await;
+    let state = db::init::AppState {
         db: pool,
     };
+    db::init::setup_database(&state.db).await;
     let server = Router::new()
-        .route("/api/test", post(test_route_handler))
+        .route("/api/test", post(handlers::apitest::test_route_handler))
+        .route("/api/createuser", post(handlers::createuser::create_user_handler))
+        .route("/api/verifyemail/{token}", get(handlers::verifyemail::verifyemail))
+        .with_state(state)
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));
 
