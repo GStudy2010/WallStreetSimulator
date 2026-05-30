@@ -2,7 +2,25 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 
-// User id missing
+pub async fn saveportfolio(db: &PgPool, user_id: Uuid) -> bool {
+    let result = sqlx::query(
+        "
+        INSERT INTO portfolios (user_id, money)
+        VALUES($1, 1000)
+        "
+    )
+    .bind(user_id)
+    .execute(db)
+    .await;
+    match result {
+        Ok(_) => true,
+        Err(e) => {
+            println!("Error while inserting into portfolios: {}", e);
+            false
+        }
+    }
+}
+
 pub async fn saveemailverification(db: &PgPool, token: String, user_id: Uuid) -> bool {
     let result = sqlx::query(
         "

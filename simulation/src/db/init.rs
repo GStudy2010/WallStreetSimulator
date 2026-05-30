@@ -19,25 +19,25 @@ pub async fn setup_database(db: &PgPool) {
         CREATE EXTENSION IF NOT EXISTS "pgcrypto";
         "#
     )
-    .execute(db)
-    .await
-    .expect("Failed to enable pgcrypto");
+        .execute(db)
+        .await
+        .expect("Failed to enable pgcrypto");
 
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS users (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
+            name TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL,
             password TEXT NOT NULL,
             email_verified BOOLEAN NOT NULL DEFAULT FALSE,
             created_at TIMESTAMP NOT NULL DEFAULT NOW()
         );
         "#
     )
-    .execute(db)
-    .await
-    .expect("Failed to create users table");
+        .execute(db)
+        .await
+        .expect("Failed to create users table");
 
     sqlx::query(
         r#"
@@ -48,9 +48,9 @@ pub async fn setup_database(db: &PgPool) {
         );
         "#
     )
-    .execute(db)
-    .await
-    .expect("Failed to create users table");
+        .execute(db)
+        .await
+        .expect("Failed to create users table");
     sqlx::query(
         "
         CREATE TABLE IF NOT EXISTS sessions (
@@ -63,6 +63,59 @@ pub async fn setup_database(db: &PgPool) {
         .execute(db)
         .await
         .expect("Falied to create sessions table");
-
+    sqlx::query(
+        "
+        CREATE TABLE IF NOT EXISTS portfolios(
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id UUID NOT NULL REFERENCES users(id),
+            money DOUBLE PRECISION NOT NULL
+        )
+        "
+        )
+        .execute(db)
+        .await
+        .expect("Falied to create portfolios table");
+    sqlx::query(
+        "
+        CREATE TABLE IF NOT EXISTS assets_on_market_user(
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            portfolio_id UUID NOT NULL REFERENCES portfolios(id),
+            symbol TEXT NOT NULL,
+            quantity DOUBLE PRECISION NOT NULL,
+            price DOUBLE PRECISION NOT NULL
+        )
+        "
+        )
+        .execute(db)
+        .await
+        .expect("Falied to create assets_on_market_user table");
+    sqlx::query(
+        "
+        CREATE TABLE IF NOT EXISTS assets_on_market(
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            portfolio_id UUID NOT NULL REFERENCES portfolios(id),
+            symbol TEXT NOT NULL,
+            quantity DOUBLE PRECISION NOT NULL,
+            max_price DOUBLE PRECISION NOT NULL
+        )
+        "
+        )
+        .execute(db)
+        .await
+        .expect("Falied to create assets_on_marke table");
+    sqlx::query(
+        "
+        CREATE TABLE IF NOT EXISTS assets_on_market_free(
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            symbol TEXT NOT NULL,
+            quantity DOUBLE PRECISION NOT NULL,
+            price DOUBLE PRECISION NOT NULL,
+            portfolio_id UUID NOT NULL REFERENCES portfolios(id)
+        )
+        "
+        )
+        .execute(db)
+        .await
+        .expect("Falied to create assets_on_market_free table");
     println!("Database setup complete");
 }

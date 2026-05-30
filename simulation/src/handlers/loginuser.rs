@@ -30,7 +30,7 @@ pub async fn login_user_handler(
         return (StatusCode::BAD_REQUEST, Json(resp));
     };
     let parsed_hash = PasswordHash::new(&user.password).unwrap();
-    if !Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash).is_ok() {
+    if Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash).is_err() {
         let resp = LoginUserResponse {
             message: "Incorrect password".to_string(),
         };
