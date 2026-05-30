@@ -2,8 +2,21 @@ import requests
 import json
 
 url = "https://hence-roster-massive-julia.trycloudflare.com/"
-command_list = ["call", "exit", "createuser", "loginuser", "logoutuser", "createasset"]
+command_list = ["call", "exit", "createuser", "loginuser", "logoutuser", "createasset", "sellasset"]
 session_token = None
+
+def SELLASSET(data):
+    global session_token
+    print("Selling an asset")
+    conn_url = url + "api/sellasset"
+    headers = {"Authorization": f"Bearer {session_token}"}
+    response = requests.post(
+            conn_url,
+            headers=headers,
+            json=data,
+    )
+    print(response.status_code)
+    print(response.text)
 
 def CREATEASSET(data):
     global session_token
@@ -85,6 +98,17 @@ def loginuserask():
         "password": password,
     }
     LOGINUSER(data)
+def sellassetask():
+    symbol = input("Give symbol of asset >> ")
+    price = float(input("Give price of signle action of asset >> "))
+    quantity = int(input("Give amount of actions >>"))
+    data = {
+            "symbol": symbol,
+            "amount": quantity,
+            "price": price,
+
+    }
+    SELLASSET(data)
 def createassetask():
     symbol = input("Give symbol of asset >> ")
     price = float(input("Give price of signle action of asset >> "))
@@ -115,6 +139,12 @@ def callC(route, data):
         except json.JSONDecodeError:
             print("Invalid JSON")
             return
+    if route == "api/sellasset":
+        try:
+            dataJ = json.loads(data)
+        except json.JSONDecodeError:
+            print("Invalid JSON")
+            return
 
 def main():
     run = True
@@ -140,6 +170,8 @@ def main():
             loginuserask()
         elif c == command_list.index("createasset"):
             createassetask()
+        elif c == command_list.index("sellasset"):
+            sellassetask()
         elif c == command_list.index("logout"):
             LOGOUT()
 

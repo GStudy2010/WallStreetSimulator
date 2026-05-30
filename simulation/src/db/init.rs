@@ -109,7 +109,8 @@ pub async fn setup_database(db: &PgPool) {
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             symbol TEXT NOT NULL,
             quantity DOUBLE PRECISION NOT NULL,
-            price DOUBLE PRECISION NOT NULL
+            price DOUBLE PRECISION NOT NULL,
+            portfolio_id UUID NOT NULL REFERENCES portfolios(id)
         )
         "
         )
