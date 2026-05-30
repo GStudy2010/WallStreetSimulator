@@ -21,6 +21,32 @@ pub async fn fetchidbyemail(db: &PgPool, email: String) -> Option<Uuid> {
     }
 }
 #[derive(FromRow)]
+pub struct Portfolio {
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub money: f64,
+}
+
+pub async fn fetchportfoliobyid(db: &PgPool, portfolio_id: Uuid) -> Option<Portfolio> {
+    let result = sqlx::query_as::<_, Portfolio>(
+        "
+        SELECT id, user_id, money
+        FROM portfolios
+        WHERE id = $1
+        "
+    )
+    .bind(portfolio_id)
+    .fetch_one(db)
+    .await;
+    match result {
+        Ok(id) => Some(id),
+        Err(e) => {
+            println!("Database error: {}", e);
+            None
+        }
+    }
+}
+#[derive(FromRow)]
 pub struct User {
     pub id: Uuid,
     pub name: String,
@@ -42,6 +68,25 @@ pub async fn fetchuserbyemail(db: &PgPool, email: String) -> Option<User> {
     .await;
     match result {
         Ok(id) => Some(id),
+        Err(e) => {
+            println!("Database error: {}", e);
+            None
+        }
+    }
+}
+pub async fn fetchportfolioidbyid(db: &PgPool, user_id: Uuid) -> Option<Uuid> {
+    let result = sqlx::query_scalar::<_, Uuid>(
+        "
+        SELECT id
+        FROM portfolios
+        WHERE user_id = $1
+        "
+    )
+    .bind(user_id)
+    .fetch_one(db)
+    .await;
+    match result {
+        Ok(portfolio_id) => Some(portfolio_id),
         Err(e) => {
             println!("Database error: {}", e);
             None

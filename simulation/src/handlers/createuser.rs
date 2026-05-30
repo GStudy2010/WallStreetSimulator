@@ -48,10 +48,16 @@ pub async fn create_user_handler(
         };
         return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
     }
-    let link = "https://graphical-apartment-males-graduates.trycloudflare.com/api/verifyemail/".to_string() + &token;
+    let link = "https://hence-roster-massive-julia.trycloudflare.com/api/verifyemail/".to_string() + &token;
     if !helpers::send_email(payload.email.clone(), link).await {
         let resp = CreateUserHandlerResponse {
             message: "Error while emailing you verification".to_string(),
+        };
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
+    }
+    if !db::createuserdb::saveportfolio(&state.db, user_id).await {
+        let resp = CreateUserHandlerResponse {
+            message: "Error while database insertion".to_string(),
         };
         return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
     }

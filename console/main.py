@@ -1,9 +1,22 @@
 import requests
 import json
 
-url = "https://graphical-apartment-males-graduates.trycloudflare.com/"
-command_list = ["call", "exit", "createuser", "loginuser", "logoutuser"]
+url = "https://hence-roster-massive-julia.trycloudflare.com/"
+command_list = ["call", "exit", "createuser", "loginuser", "logoutuser", "createasset"]
 session_token = None
+
+def CREATEASSET(data):
+    global session_token
+    print("Creating an asset")
+    conn_url = url + "api/createasset"
+    headers = {"Authorization": f"Bearer {session_token}"}
+    response = requests.post(
+            conn_url,
+            headers=headers,
+            json=data,
+    )
+    print(response.status_code)
+    print(response.text)
 
 def CREATEUSER(data):
     print("Creating user")
@@ -72,7 +85,16 @@ def loginuserask():
         "password": password,
     }
     LOGINUSER(data)
-
+def createassetask():
+    symbol = input("Give symbol of asset >> ")
+    price = float(input("Give price of signle action of asset >> "))
+    quantity = int(input("Give amount of actions >>"))
+    data = {
+            "symbol": symbol,
+            "price": price,
+            "quantity": quantity,
+    }
+    CREATEASSET(data)
 def callC(route, data):
     if route == "api/test":
         try:
@@ -82,6 +104,12 @@ def callC(route, data):
             return
         TESTHANDLE(dataJ)
     if route == "api/createuser":
+        try:
+            dataJ = json.loads(data)
+        except json.JSONDecodeError:
+            print("Invalid JSON")
+            return
+    if route == "api/createasset":
         try:
             dataJ = json.loads(data)
         except json.JSONDecodeError:
@@ -110,6 +138,8 @@ def main():
             creatuserask()
         elif c == command_list.index("loginuser"):
             loginuserask()
+        elif c == command_list.index("createasset"):
+            createassetask()
         elif c == command_list.index("logout"):
             LOGOUT()
 
