@@ -2,8 +2,21 @@ import requests
 import json
 
 url = "https://hence-roster-massive-julia.trycloudflare.com/"
-command_list = ["call", "exit", "createuser", "loginuser", "logoutuser", "createasset", "sellasset"]
+command_list = ["call", "exit", "createuser", "loginuser", "logoutuser", "createasset", "sellasset", "buyasset"]
 session_token = None
+
+def BUYASSET(data):
+    global session_token
+    print("Buying an asset")
+    conn_url = url + "api/buyasset"
+    headers = {"Authorization": f"Bearer {session_token}"}
+    response = requests.post(
+            conn_url,
+            headers=headers,
+            json=data,
+    )
+    print(response.status_code)
+    print(response.text)
 
 def SELLASSET(data):
     global session_token
@@ -98,6 +111,17 @@ def loginuserask():
         "password": password,
     }
     LOGINUSER(data)
+def buyassetask():
+    symbol = input("Give symbol of asset >> ")
+    price = float(input("Give a max price you are willing to buy of signle action of asset >> "))
+    quantity = int(input("Give amount of actions >>"))
+    data = {
+            "symbol": symbol,
+            "amount": quantity,
+            "max_price": price,
+
+    }
+    BUYASSET(data)
 def sellassetask():
     symbol = input("Give symbol of asset >> ")
     price = float(input("Give price of signle action of asset >> "))
@@ -172,6 +196,8 @@ def main():
             createassetask()
         elif c == command_list.index("sellasset"):
             sellassetask()
+        elif c == command_list.index("buyasset"):
+            buyassetask()
         elif c == command_list.index("logout"):
             LOGOUT()
 

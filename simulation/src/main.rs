@@ -27,6 +27,7 @@ async fn main() {
         .route("/api/verifyemail/{token}", get(handlers::verifyemail::verifyemail))
         .route("/api/createasset", post(handlers::createasset::create_asset_handler))
         .route("/api/sellasset", post(handlers::sellasset::sell_asset_handler))
+        .route("/api/buyasset", post(handlers::buyasset::buy_asset_handler))
         .with_state(state)
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));

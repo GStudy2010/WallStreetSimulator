@@ -5,3 +5,5 @@ pub mod logoutuserdb;
 pub mod fetches;
 pub mod createassetdb;
 pub mod sellassetdb;
+pub mod buyassetdb;
+

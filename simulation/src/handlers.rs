@@ -5,3 +5,4 @@ pub mod logoutuser;
 pub mod verifyemail;
 pub mod createasset;
 pub mod sellasset;
+pub mod buyasset;
