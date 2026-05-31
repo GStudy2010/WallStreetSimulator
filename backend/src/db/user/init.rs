@@ -65,7 +65,7 @@ pub async fn setup_database(db: &PgPool) {
         .expect("Falied to create sessions table");
     sqlx::query(
         "
-        CREATE TABLE rooms (
+        CREATE TABLE IF NOT EXISTS rooms (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
         owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -78,6 +78,21 @@ pub async fn setup_database(db: &PgPool) {
         password TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
+        "
+        )
+        .execute(db)
+        .await
+        .expect("Failed to create table rooms");
+    sqlx::query(
+        "
+        CREATE TABLE IF NOT EXISTS room_members (
+        room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+        joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        PRIMARY KEY (room_id, user_id)
+        )    
         "
         )
         .execute(db)

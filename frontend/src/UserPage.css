@@ -1,0 +1,49 @@
+.user-page {
+  min-height: 100vh;
+  padding: 3rem 8%;
+  background: var(--bg);
+}
+
+.user-page-header {
+  margin-bottom: 3rem;
+}
+
+.user-page-header h1 {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 0.75rem;
+}
+
+.user-page-header p {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(320px, 1fr));
+
+  gap: 1.5rem;
+}
+.room-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.createroombutton {
+  background: var(--green);
+  color: black;
+  border: none;
+
+  box-shadow:
+    0 0 20px var(--glow);
+}
+
+.createroombutton:hover {
+  transform: translateY(-2px);
+}
