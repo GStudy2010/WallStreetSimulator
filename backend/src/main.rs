@@ -1,9 +1,11 @@
 use std::net::SocketAddr;
-use axum::response::Redirect;
+use axum::http::Request;
+use axum::middleware::{self, Next};
+use axum::response::{Redirect, Response};
 use axum::routing::{post, get};
 use axum::Router;
 use tower_http::cors::CorsLayer;
-use tower_http::services::ServeDir;
+use tower_http::services::{ServeDir, ServeFile};
 mod db;
 mod handlers;
 mod helpers;
@@ -21,8 +23,12 @@ async fn main() {
         db: pool,
     };
     db::init::setup_database(&state.db).await;
+    let react_service = ServeDir::new("../frontend/dist")
+        .not_found_service(
+            ServeFile::new("../frontend/dist/index.html")
+            );
     let server = Router::new()
-        .nest_service("/app", ServeDir::new("../frontend").append_index_html_on_directories(true))
+        .nest_service("/app", react_service)
         .route("/api/test", post(handlers::apitest::test_route_handler))
         .route("/api/createuser", post(handlers::createuser::create_user_handler))
         .route("/api/loginuser", post(handlers::loginuser::login_user_handler))

@@ -1,0 +1,177 @@
+:root {
+  --bg: #050505;
+  --card: rgba(15, 17, 21, 0.92);
+  --border: #1f2430;
+
+  --text: #ffffff;
+  --muted: #8f98a8;
+
+  --green: #00ff88;
+}
+
+.create-account-page {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: var(--bg);
+
+  position: relative;
+  overflow: hidden;
+
+  padding: 2rem;
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,0.03) 1px,
+      transparent 1px
+    );
+
+  background-size: 50px 50px;
+
+  pointer-events: none;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 500px;
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+  border-radius: 24px;
+
+  backdrop-filter: blur(14px);
+
+  padding: 2.5rem;
+
+  position: relative;
+  z-index: 2;
+
+  box-shadow:
+    0 0 40px rgba(0, 255, 136, 0.08);
+}
+
+.card-header {
+  margin-bottom: 2rem;
+}
+
+.badge {
+  display: inline-block;
+
+  color: var(--green);
+  border: 1px solid var(--green);
+
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.card-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-header p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  color: #d8dce3;
+}
+
+.input-group input {
+  background: #0b0d10;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  color: white;
+
+  padding: 14px 16px;
+  font-size: 1rem;
+
+  transition: 0.25s;
+}
+
+.input-group input:focus {
+  outline: none;
+
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 3px rgba(0,255,136,0.1);
+}
+
+.create-btn {
+  margin-top: 0.75rem;
+
+  height: 52px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: var(--green);
+  color: black;
+
+  font-weight: 700;
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  transition: 0.25s;
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 25px rgba(0,255,136,0.3);
+}
+
+.footer-links {
+  margin-top: 1.5rem;
+
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+
+  color: var(--muted);
+}
+
+.footer-links a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
