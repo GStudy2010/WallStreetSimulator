@@ -65,57 +65,23 @@ pub async fn setup_database(db: &PgPool) {
         .expect("Falied to create sessions table");
     sqlx::query(
         "
-        CREATE TABLE IF NOT EXISTS portfolios(
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            user_id UUID NOT NULL REFERENCES users(id),
-            money DOUBLE PRECISION NOT NULL
+        CREATE TABLE rooms (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+        owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+        name TEXT NOT NULL,
+        max_players INTEGER NOT NULL CHECK (max_players > 0),
+        start_money DOUBLE PRECISION NOT NULL CHECK (start_money >= 0),
+        duration_years INTEGER NOT NULL CHECK (duration_years > 0),
+        public_priavte BOOLEAN NOT NULL,
+        password TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
         "
         )
         .execute(db)
         .await
-        .expect("Falied to create portfolios table");
-    sqlx::query(
-        "
-        CREATE TABLE IF NOT EXISTS assets_on_market_user(
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            portfolio_id UUID NOT NULL REFERENCES portfolios(id),
-            symbol TEXT NOT NULL,
-            quantity DOUBLE PRECISION NOT NULL,
-            price DOUBLE PRECISION NOT NULL
-        )
-        "
-        )
-        .execute(db)
-        .await
-        .expect("Falied to create assets_on_market_user table");
-    sqlx::query(
-        "
-        CREATE TABLE IF NOT EXISTS assets_on_market(
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            portfolio_id UUID NOT NULL REFERENCES portfolios(id),
-            symbol TEXT NOT NULL,
-            quantity DOUBLE PRECISION NOT NULL,
-            max_price DOUBLE PRECISION NOT NULL
-        )
-        "
-        )
-        .execute(db)
-        .await
-        .expect("Falied to create assets_on_marke table");
-    sqlx::query(
-        "
-        CREATE TABLE IF NOT EXISTS assets_on_market_free(
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            symbol TEXT NOT NULL,
-            quantity DOUBLE PRECISION NOT NULL,
-            price DOUBLE PRECISION NOT NULL,
-            portfolio_id UUID NOT NULL REFERENCES portfolios(id)
-        )
-        "
-        )
-        .execute(db)
-        .await
-        .expect("Falied to create assets_on_market_free table");
+        .expect("Failed to create table rooms");
     println!("Database setup complete");
 }

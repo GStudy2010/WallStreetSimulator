@@ -2,7 +2,7 @@ use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 
-use crate::{db::{self, init::AppState}, helpers};
+use crate::{db::{self, user::init::AppState}, helpers};
 
 #[derive(Deserialize)]
 pub struct LoginUserRequest {
@@ -23,7 +23,7 @@ pub async fn login_user_handler(
         };
         return (StatusCode::BAD_REQUEST, Json(resp));
     }
-    let Some(user) = db::fetches::fetchuserbyemail(&state.db, payload.email).await else {
+    let Some(user) = db::user::fetches::fetchuserbyemail(&state.db, payload.email).await else {
         let resp = LoginUserResponse {
             message: "Invalid email of password".to_string(),
         };
@@ -42,7 +42,7 @@ pub async fn login_user_handler(
         };
         return (StatusCode::FORBIDDEN, Json(resp));
     }
-    let Some(token) = db::loginuserdb::createsession(&state.db, user.id).await else {
+    let Some(token) = db::user::loginuserdb::createsession(&state.db, user.id).await else {
         let resp = LoginUserResponse {
             message: "Internal server error".to_string(),
         };

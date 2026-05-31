@@ -1,6 +1,6 @@
 use axum::{extract::{Path, State}, http::StatusCode};
 
-use crate::db::init::AppState;
+use crate::db::user::init::AppState;
 
 pub async fn verifyemail(
     State(state): State<AppState>,

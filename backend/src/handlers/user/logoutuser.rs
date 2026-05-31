@@ -1,8 +1,7 @@
 use axum::{Json, extract::State, http::{HeaderMap, StatusCode}, response::IntoResponse};
-use lettre::message::header::Header;
 use serde::{Deserialize, Serialize};
 
-use crate::db::{self, init::AppState};
+use crate::db::{self, user::init::AppState};
 
 #[derive(Serialize, Deserialize)]
 pub struct LogoutUserHandlerResponse {
@@ -23,7 +22,7 @@ pub async fn logout_user_handler(
         };
         return (StatusCode::UNAUTHORIZED, Json(resp));
     };
-    if !db::logoutuserdb::deletesession(&state.db, token.to_string()).await {
+    if !db::user::logoutuserdb::deletesession(&state.db, token.to_string()).await {
         let resp = LogoutUserHandlerResponse {
             message: "Error while logging out".to_string()
         };

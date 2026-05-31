@@ -1,8 +1,2 @@
-pub mod apitest;
-pub mod createuser;
-pub mod loginuser;
-pub mod logoutuser;
-pub mod verifyemail;
-pub mod createasset;
-pub mod sellasset;
-pub mod buyasset;
+pub mod user;
+pub mod room;

@@ -33,8 +33,6 @@ export default function LoginUser() {
 
       const data = await response.json();
 
-      console.log(data);
-
       if (response.status === 400) {
         setShow400modal(true);
         return;
@@ -51,6 +49,8 @@ export default function LoginUser() {
         throw new Error(data.message);
       }
       setShowLoggedInmodal(true);
+
+      localStorage.setItem("authToken", data.message);
 
       navigate("/app");
     } catch (err) {
