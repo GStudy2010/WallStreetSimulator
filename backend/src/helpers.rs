@@ -51,3 +51,41 @@ pub async fn hash(string: String) -> String {
         .unwrap()
         .to_string()
 }
+use serde::Serialize;
+use axum::{
+    Json,
+    http::StatusCode,
+    response::{IntoResponse, Response},
+};
+#[derive(Serialize)]
+struct ErrorResponse {
+    message: String,
+}
+
+pub enum ApiError {
+    Unauthorized,
+    InvalidToken,
+    Database,
+}
+impl IntoResponse for ApiError {
+    fn into_response(self) -> Response {
+        let (status, message) = match self {
+            ApiError::Unauthorized =>
+                (StatusCode::UNAUTHORIZED, "No token provided"),
+
+            ApiError::InvalidToken =>
+                (StatusCode::BAD_REQUEST, "Invalid token"),
+
+            ApiError::Database =>
+                (StatusCode::INTERNAL_SERVER_ERROR, "Database error"),
+        };
+
+        (
+            status,
+            Json(ErrorResponse {
+                message: message.to_string(),
+            }),
+        )
+        .into_response()
+    }
+}

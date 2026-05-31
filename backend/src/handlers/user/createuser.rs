@@ -55,11 +55,5 @@ pub async fn create_user_handler(
         };
         return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
     }
-    if !db::user::createuserdb::saveportfolio(&state.db, user_id).await {
-        let resp = CreateUserHandlerResponse {
-            message: "Error while database insertion".to_string(),
-        };
-        return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
-    }
     (StatusCode::CREATED, Json(resp))
 }

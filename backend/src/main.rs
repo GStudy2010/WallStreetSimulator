@@ -35,6 +35,8 @@ async fn main() {
         .route("/api/logoutuser", post(handlers::user::logoutuser::logout_user_handler))
         .route("/api/verifyemail/{token}", get(handlers::user::verifyemail::verifyemail))
         .route("/api/createroom", post(handlers::room::createroom::create_room_handler))
+        .route("/api/joinroom", post(handlers::room::joinroom::join_room_handler))
+        .route("/api/query/rooms", get(handlers::queries::queryroom::query_room_handler))
         .with_state(state)
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));
