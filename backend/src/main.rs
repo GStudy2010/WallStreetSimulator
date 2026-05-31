@@ -18,25 +18,23 @@ async fn main() {
     println!("SMTP_PASSWORD: {:?}", std::env::var("SMTP_PASSWORD"));
     println!("DATABASE_URL: {:?}", std::env::var("DATABASE_URL"));
     let database_url = std::env::var("DATABASE_URL").unwrap();
-    let pool = db::init::connect_db(&database_url).await;
-    let state = db::init::AppState {
+    let pool = db::user::init::connect_db(&database_url).await;
+    let state = db::user::init::AppState {
         db: pool,
     };
-    db::init::setup_database(&state.db).await;
+    db::user::init::setup_database(&state.db).await;
     let react_service = ServeDir::new("../frontend/dist")
         .not_found_service(
             ServeFile::new("../frontend/dist/index.html")
             );
     let server = Router::new()
         .nest_service("/app", react_service)
-        .route("/api/test", post(handlers::apitest::test_route_handler))
-        .route("/api/createuser", post(handlers::createuser::create_user_handler))
-        .route("/api/loginuser", post(handlers::loginuser::login_user_handler))
-        .route("/api/logoutuser", post(handlers::logoutuser::logout_user_handler))
-        .route("/api/verifyemail/{token}", get(handlers::verifyemail::verifyemail))
-        .route("/api/createasset", post(handlers::createasset::create_asset_handler))
-        .route("/api/sellasset", post(handlers::sellasset::sell_asset_handler))
-        .route("/api/buyasset", post(handlers::buyasset::buy_asset_handler))
+        .route("/api/test", post(handlers::user::apitest::test_route_handler))
+        .route("/api/createuser", post(handlers::user::createuser::create_user_handler))
+        .route("/api/loginuser", post(handlers::user::loginuser::login_user_handler))
+        .route("/api/logoutuser", post(handlers::user::logoutuser::logout_user_handler))
+        .route("/api/verifyemail/{token}", get(handlers::user::verifyemail::verifyemail))
+        .route("/api/createroom", post(handlers::room::createroom::create_room_handler))
         .with_state(state)
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));
