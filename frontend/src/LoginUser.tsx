@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./LoginUser.css";
 import Modal from "./Modal";
+import GoBack from "./GoBack";
 
 export default function LoginUser() {
   const navigate = useNavigate();
@@ -64,10 +65,7 @@ export default function LoginUser() {
 
       <div className="register-card">
         <div className="card-header">
-          <span className="badge">
-            WALL STREET SIMULATOR
-          </span>
-
+          <GoBack />
           <h1> Login to your account </h1>
 
           <p>

@@ -1,7 +1,4 @@
 use std::net::SocketAddr;
-use axum::http::Request;
-use axum::middleware::{self, Next};
-use axum::response::{Redirect, Response};
 use axum::routing::{post, get};
 use axum::Router;
 use tower_http::cors::CorsLayer;
@@ -37,6 +34,7 @@ async fn main() {
         .route("/api/createroom", post(handlers::room::createroom::create_room_handler))
         .route("/api/joinroom", post(handlers::room::joinroom::join_room_handler))
         .route("/api/query/rooms", get(handlers::queries::queryroom::query_room_handler))
+        .route("/api/query/usersinroom", get(handlers::queries::queryuserinroom::query_user_in_room_handler))
         .with_state(state)
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));

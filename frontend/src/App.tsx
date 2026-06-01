@@ -6,6 +6,9 @@ import HomePage from './HomePage'
 import CreateAccount from './CreateAccount'
 import LoginUser from './LoginUser'
 import UserPage from './UserPage'
+import CreatePrivate from './CreatePrivate'
+import CreatePublic from './CreatePublic'
+import RoomPage from './RoomPage'
 
 function App() {
 
@@ -19,6 +22,9 @@ function App() {
         } />
         <Route path="/app/createAccount" element={<CreateAccount />}/>
         <Route path="/app/loginUser" element={<LoginUser />}/>
+        <Route path="/app/createPrivate" element={<CreatePrivate />}/>
+        <Route path="/app/createPublic" element={<CreatePublic />}/>
+        <Route path="/app/room/:roomId" element={<RoomPage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -72,9 +72,10 @@ pub async fn setup_database(db: &PgPool) {
 
         name TEXT NOT NULL,
         max_players INTEGER NOT NULL CHECK (max_players > 0),
+        current_players INTEGER NOT NULL,
         start_money DOUBLE PRECISION NOT NULL CHECK (start_money >= 0),
         duration_years INTEGER NOT NULL CHECK (duration_years > 0),
-        public_priavte BOOLEAN NOT NULL,
+        public_private BOOLEAN NOT NULL,
         password TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
@@ -83,12 +84,16 @@ pub async fn setup_database(db: &PgPool) {
         .execute(db)
         .await
         .expect("Failed to create table rooms");
+    // typeof_user == true  => Normal user
+    // typeof_user == false => Admin user
     sqlx::query(
         "
         CREATE TABLE IF NOT EXISTS room_members (
         room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
+        typeof_user BOOLEAN NOT NULL, 
+        token TEXT,
+        expires_at TIMESTAMP NOT NULL,
         joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
         PRIMARY KEY (room_id, user_id)

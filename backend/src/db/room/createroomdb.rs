@@ -19,11 +19,12 @@ pub async fn createroomdb(
             owner_id,
             name,
             max_players,
+            current_players,
             start_money,
             duration_years,
             public_private
         )
-        VALUES ($1, $2, $3, $4, $5, $6)
+        VALUES ($1, $2, $3, 0, $4, $5, $6)
         "#
         )
             .bind(user_id)
@@ -46,12 +47,13 @@ pub async fn createroomdb(
             owner_id,
             name,
             max_players,
+            current_players,
             start_money,
             duration_years,
             public_private,
             password
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        VALUES ($1, $2, $3, 0, $4, $5, $6, $7)
         "#
         )
             .bind(user_id)

@@ -3,6 +3,8 @@ import RoomCard from './RoomBox.tsx';
 import type { Room } from './RoomBox.tsx'
 import './UserPage.css';
 import './HomePage.css';
+import { useNavigate } from 'react-router-dom';
+import GoBack from './GoBack.tsx';
 
 interface QueryRoomResponse {
   rooms: Room[];
@@ -12,6 +14,14 @@ export default function UserPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
+  const handlePrivate = () => {
+    navigate("/app/createPrivate");
+  }
+  const handlePublic = () => {
+    navigate("/app/createPublic");
+  }
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -48,17 +58,18 @@ export default function UserPage() {
   if (loading) {
     return <h1>Loading...</h1>;
   }
-
   return (
     <div className="user-page">
       <div className="user-page-header">
-        <h1>Trading Rooms</h1>
+        <GoBack />
+        <h1>TRADING ROOMS</h1>
         <p>Join a simulation and compete with other traders.</p>
       </div>
       <div className="room-actions">
         <button
           type="submit"
           className="primary-btn"
+          onClick={handlePublic}
         >
           Create an online Lobby
         </button>
@@ -66,6 +77,7 @@ export default function UserPage() {
         <button
           type="submit"
           className="primary-btn"
+          onClick={handlePrivate}
         >
           Create a private Lobby
         </button>
