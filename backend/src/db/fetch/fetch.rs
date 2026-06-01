@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::handlers::queries::queryroom::Room;
+use crate::handlers::queries::{queryroom::Room, queryuserinroom::User};
 use sqlx::FromRow;
 
 #[derive(FromRow)]
@@ -43,6 +43,43 @@ pub async fn fetch_rooms(
             current_players: row.current_players as u32,
             start_cash: row.start_money,
             years: row.duration_years as u32,
+        })
+        .collect())
+}
+#[derive(FromRow)]
+pub struct UserRow {
+    pub id: Uuid,
+    pub name: String,
+    pub typeof_user: bool,
+}
+
+pub async fn fetch_users(
+    db: &PgPool,
+    room_id: Uuid,
+) -> Result<Vec<User>, sqlx::Error> {
+    let rows: Vec<UserRow> = sqlx::query_as(
+        r#"
+        SELECT
+            u.id,
+            u.name,
+            rm.typeof_user
+        FROM room_members rm
+        INNER JOIN users u
+            ON u.id = rm.user_id
+        WHERE rm.room_id = $1
+        ORDER BY rm.joined_at
+        "#
+    )
+    .bind(room_id)
+    .fetch_all(db)
+    .await?;
+
+    Ok(rows
+        .into_iter()
+        .map(|row| User {
+            id: row.id,
+            name: row.name,
+            typeofuser: row.typeof_user,
         })
         .collect())
 }

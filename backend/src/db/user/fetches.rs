@@ -114,3 +114,24 @@ pub async fn getsession(db: &PgPool, token: String) -> Option<Uuid> {
         }
     }
 }
+pub async fn getroom(db: &PgPool, token: String) -> Option<Uuid> {
+    let result = sqlx::query_scalar::<_, Uuid>(
+        "
+        SELECT room_id
+        FROM room_members
+        WHERE token = $1
+        AND expires_at > NOW()
+        "
+    )
+    .bind(token)
+    .fetch_one(db)
+    .await;
+
+    match result {
+        Ok(user_id) => Some(user_id),
+        Err(e) => {
+            println!("Database error: {}", e);
+            None
+        }
+    }
+}
