@@ -3,6 +3,12 @@ import './CreatePublic.css'
 import GoBack from './GoBack'
 import { useState } from 'react';
 import Modal from './Modal';
+import type { Room } from './RoomBox';
+
+interface QueryRoomResponse {
+  rooms: Room[];
+}
+
 export default function CreatePublic() {
   const navigate = useNavigate();
 
@@ -29,7 +35,7 @@ export default function CreatePublic() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: name,
+          name,
           pop: true,
           all_players: Number(maxPlayers),
           start_cash: parseFloat(startCash),
@@ -38,23 +44,29 @@ export default function CreatePublic() {
         }),
       });
 
-      const data = await response.json();
-
-      console.log(data);
-
-      if (response.status === 400) {
-        setShow400modal(true);
-      }
-      if (response.status === 500) {
-        setShow500modal(true);
-      }
-
       if (!response.ok) {
-        throw new Error(data.message);
+        throw new Error("Failed to create room");
       }
-      setShowCreateModal(true);
 
-      navigate("/app");
+      // Fetch rooms
+      const roomsResponse = await fetch("/api/query/rooms", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data: QueryRoomResponse = await roomsResponse.json();
+
+      const room = data.rooms.find(r => r.name === name);
+
+      if (!room) {
+        throw new Error("Created room not found");
+      }
+
+      navigate(`/app/room/${room.id}`, {
+        state: { room },
+      });
     } catch (err) {
       console.error(err);
     }

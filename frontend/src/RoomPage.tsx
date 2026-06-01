@@ -20,12 +20,13 @@ export default function RoomPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            id: room.id,
+            room_id: room.id,
             pop: true,
             password: "",
           }),
         });
-
+        const data = await response.json();
+        localStorage.setItem("roomToken", data.message);
         if (!response.ok) {
           throw new Error("Failed to join room");
         }
