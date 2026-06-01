@@ -61,7 +61,7 @@ body {
 
 .badge {
   display: inline-block;
-
+  cursor: default;
   border: 1px solid var(--green);
   color: var(--green);
 

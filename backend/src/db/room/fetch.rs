@@ -3,13 +3,13 @@ use uuid::Uuid;
 
 pub async fn fetchpasswordbyname(
     db: &PgPool,
-    name: String,
+    name: Uuid,
 ) -> Result<String, sqlx::Error> {
     let password_hash: String = sqlx::query_scalar(
         r#"
         SELECT password_hash
         FROM rooms
-        WHERE name = $1
+        WHERE id = $1
         "#
     )
     .bind(name)
@@ -20,13 +20,13 @@ pub async fn fetchpasswordbyname(
 }
 pub async fn fetchroomidbyname(
     db: &PgPool,
-    name: String,
+    name: Uuid,
 ) -> Result<Uuid, sqlx::Error> {
     let password_hash: Uuid = sqlx::query_scalar(
         r#"
         SELECT id
         FROM rooms
-        WHERE name = $1
+        WHERE id = $1
         "#
     )
     .bind(name)

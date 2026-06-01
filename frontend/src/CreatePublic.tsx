@@ -1,41 +1,40 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import "./CreateAccount.css";
-import Modal from "./Modal";
-import GoBack from "./GoBack";
-
-export default function CreateAccount() {
+import { useNavigate } from 'react-router-dom';
+import './CreatePublic.css'
+import GoBack from './GoBack'
+import { useState } from 'react';
+import Modal from './Modal';
+export default function CreatePublic() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [maxPlayers, setMaxPlayers] = useState("");
+  const [startCash, setStartCash] = useState("");
+  const [length, setLength] = useState("");
   
   const [show400modal, setShow400modal] = useState(false);
   const [show500modal, setShow500modal] = useState(false);
+  const [showCreatedModal, setShowCreateModal] = useState(false);
   const [showAcountCreatedmodal, setShowAcountCreatedmodal] = useState(false);
-
+  const token = localStorage.getItem("authToken");
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      alert("Passwords don't match");
-      return;
-    }
-
+    
     try {
-      const response = await fetch("/api/createuser", {
+      const response = await fetch("/api/createroom", {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: username,
-          email,
-          password,
+          name: name,
+          pop: true,
+          all_players: Number(maxPlayers),
+          start_cash: parseFloat(startCash),
+          years: Number(length),
+          password: "",
         }),
       });
 
@@ -53,9 +52,9 @@ export default function CreateAccount() {
       if (!response.ok) {
         throw new Error(data.message);
       }
-      setShowAcountCreatedmodal(true);
+      setShowCreateModal(true);
 
-      navigate("/app/loginUser");
+      navigate("/app");
     } catch (err) {
       console.error(err);
     }
@@ -68,11 +67,10 @@ export default function CreateAccount() {
       <div className="register-card">
         <div className="card-header">
           <GoBack />
-          <h1>Create Account</h1>
+          <h1>Create a Public game</h1>
 
           <p>
-            Start building your virtual portfolio and
-            compete with traders around the world.
+            Create a public game to play with other people and enjoy.
           </p>
         </div>
 
@@ -81,49 +79,48 @@ export default function CreateAccount() {
           onSubmit={handleSubmit}
         >
           <div className="input-group">
-            <label>Username</label>
+            <label>Name of the game</label>
             <input
               type="text"
-              placeholder="Enter username"
-              value={username}
+              placeholder="Enter games name"
+              value={name}
               onChange={(e) =>
-                setUsername(e.target.value)
+                setName(e.target.value)
               }
             />
           </div>
 
           <div className="input-group">
-            <label>Email</label>
+            <label>Max amount of players</label>
             <input
-              type="email"
-              placeholder="Enter email"
-              value={email}
+              type="text"
+              placeholder="Max amount of players ( 2-100 )"
+              value={maxPlayers}
               onChange={(e) =>
-                setEmail(e.target.value)
+                setMaxPlayers(e.target.value)
+              }
+            />
+          </div>
+          <div className="input-group">
+            <label>Starting cash</label>
+            <input
+              type="text"
+              placeholder="Starting cash ( thousands of dolars )"
+              value={startCash}
+              onChange={(e) =>
+                setStartCash(e.target.value)
               }
             />
           </div>
 
           <div className="input-group">
-            <label>Password</label>
+            <label>Length of the game</label>
             <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
+              type="text"
+              placeholder="Length of the game ( years )"
+              value={length}
               onChange={(e) =>
-                setPassword(e.target.value)
-              }
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) =>
-                setConfirmPassword(e.target.value)
+                setLength(e.target.value)
               }
             />
           </div>
@@ -132,17 +129,9 @@ export default function CreateAccount() {
             type="submit"
             className="create-btn"
           >
-            Create Trading Account
+            Create the game
           </button>
         </form>
-
-        <div className="footer-links">
-          <span>Already have an account?</span>
-
-          <Link to="/login">
-            Login
-          </Link>
-        </div>
       </div>
         <Modal
           isOpen={show400modal}
@@ -157,11 +146,18 @@ export default function CreateAccount() {
           onClose={() => setShow500modal(false)}
         />
         <Modal
+          isOpen={showCreatedModal}
+          title="Created the public lobby"
+          message="Public lobby created you can now join it on the main screen"
+          onClose={() => setShowCreateModal(false)}
+        />
+        <Modal
           isOpen={showAcountCreatedmodal}
           title="Logged in to your account"
           message="You logged in, happy trading"
-          onClose={() => setShowAcountCreatedmodal(false)}
+          onClose={() => {setShowAcountCreatedmodal(false);navigate("/app")}}
         />
     </main>
   );
 }
+

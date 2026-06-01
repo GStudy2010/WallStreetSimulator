@@ -1,11 +1,12 @@
 use axum::{Json, extract::State, http::{HeaderMap, StatusCode}, response::IntoResponse};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::db::{self, user::init::AppState};
 
 #[derive(Deserialize)]
 pub struct JoinRoomRequest {
-    name: String,
+    id: Uuid,
     pop: bool,
     password: String, // empty string for no password
 }
@@ -36,29 +37,18 @@ pub async fn join_room_handler(
         };
         return (StatusCode::BAD_REQUEST, Json(resp));
     };
-    let room_id = match db::room::fetch::fetchroomidbyname(&state.db, payload.name.clone()).await {
-        Ok(s) => {
-            s
-        } 
-        Err(e) => {
-            println!("Error while fetching: {}", e);
-            let resp = JoinRoomResponse {
-                message: "Error while fetching from database".to_string()
-            };
-            return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
-        }
-    };
+    let room_id = payload.id;
     // if public
     if payload.pop {
-        match db::room::joinroomdb::joinroomdb(&state.db, user_id, room_id).await {
+        match db::room::joinroomdb::joinroomdb(&state.db, room_id, user_id).await {
             Ok(()) => {
                 let resp = JoinRoomResponse {
-                    message: "Room created".to_string()
+                    message: "Room joined".to_string()
                 };
-                (StatusCode::CREATED, Json(resp))
+                (StatusCode::OK, Json(resp))
             }
             Err(e) => {
-                println!("Error while creating a room in db: {}", e);
+                println!("Error while joining a room in db: {}", e);
                 let resp = JoinRoomResponse {
                     message: "Internal server error".to_string()
                 };
@@ -66,7 +56,7 @@ pub async fn join_room_handler(
             }
         }
     } else {
-        match db::room::fetch::fetchpasswordbyname(&state.db, payload.name).await {
+        match db::room::fetch::fetchpasswordbyname(&state.db, payload.id).await {
             Ok(s) => {
                 if payload.password == s {
                     let resp = JoinRoomResponse {
@@ -86,12 +76,12 @@ pub async fn join_room_handler(
         match db::room::joinroomdb::joinroomdb(&state.db, user_id, room_id).await {
             Ok(()) => {
                 let resp = JoinRoomResponse {
-                    message: "Room created".to_string()
+                    message: "Room joined".to_string()
                 };
-                (StatusCode::CREATED, Json(resp))
+                (StatusCode::OK, Json(resp))
             }
             Err(e) => {
-                println!("Error while creating a room in db: {}", e);
+                println!("Error while joining a room in db: {}", e);
                 let resp = JoinRoomResponse {
                     message: "Internal server error".to_string()
                 };

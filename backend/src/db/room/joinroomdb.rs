@@ -15,8 +15,8 @@ pub async fn joinroomdb(
     )
     .bind(room_id)
     .fetch_one(db)
-    .await?;
-
+    .await
+    .expect("SELECT COUNT");
     let max_players: i32 = sqlx::query_scalar(
         r#"
         SELECT max_players
@@ -26,7 +26,8 @@ pub async fn joinroomdb(
     )
     .bind(room_id)
     .fetch_one(db)
-    .await?;
+    .await
+    .expect("Error in SELECT ROOMS");
 
     if current_players >= max_players as i64 {
         return Err(sqlx::Error::RowNotFound);
@@ -41,6 +42,19 @@ pub async fn joinroomdb(
     .bind(room_id)
     .bind(user_id)
     .execute(db)
-    .await?;
+    .await
+    .expect("Error in INSERT INTO ROOMS");
+    sqlx::query(
+        r#"
+        UPDATE rooms
+        SET current_players = current_players + 1
+        WHERE id = $1
+            AND current_players < max_players
+        "#
+    )
+    .bind(room_id)
+    .execute(db)
+    .await
+    .expect("Error in UPDATA ROOMS");
     Ok(())
 }

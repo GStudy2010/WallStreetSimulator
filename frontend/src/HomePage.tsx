@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./HomePage.css"
+import GoBack from "./GoBack";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -14,8 +15,7 @@ export default function HomePage() {
       <div className="grid-overlay" />
 
       <section className="hero">
-        <span className="badge">Virtual Trading Platform</span>
-
+        <GoBack />
         <h1>
           WALL STREET
           <br />

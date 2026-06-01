@@ -48,7 +48,7 @@ pub async fn create_user_handler(
         };
         return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
     }
-    let link = "https://surfing-robinson-canvas-athletes.trycloudflare.com/api/verifyemail/".to_string() + &token;
+    let link = "https://carol-passengers-admission-cove.trycloudflare.com/api/verifyemail".to_string() + &token;
     if !helpers::send_email(payload.email.clone(), link).await {
         let resp = CreateUserHandlerResponse {
             message: "Error while emailing you verification".to_string(),

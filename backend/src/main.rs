@@ -1,7 +1,4 @@
 use std::net::SocketAddr;
-use axum::http::Request;
-use axum::middleware::{self, Next};
-use axum::response::{Redirect, Response};
 use axum::routing::{post, get};
 use axum::Router;
 use tower_http::cors::CorsLayer;

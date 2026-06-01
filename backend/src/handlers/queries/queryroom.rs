@@ -1,11 +1,15 @@
 use axum::{Json, extract::State, http::HeaderMap};
 use serde::Serialize;
+use uuid::Uuid;
 
 use crate::{db::{self, user::init::AppState}, helpers::ApiError};
 
 #[derive(Serialize)]
 pub struct Room {
+    pub id: Uuid,
+    pub name: String,
     pub amount_players: u32,
+    pub current_players: u32,
     pub start_cash: f64,
     pub years: u32
 }
@@ -34,7 +38,10 @@ pub async fn query_room_handler(
 
     let rooms = db::fetch::fetch::fetch_rooms(&state.db, user_id)
         .await
-        .map_err(|_| ApiError::Database)?;
+        .map_err(|e| {
+            println!("Error: {}", e);
+            ApiError::Database
+        })?;
 
     Ok(Json(QueryRoomResponse { rooms }))
 }
