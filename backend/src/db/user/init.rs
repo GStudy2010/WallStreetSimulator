@@ -1,7 +1,17 @@
+use std::{collections::HashMap, sync::Arc};
+
 use sqlx::{PgPool, postgres::PgPoolOptions};
+use tokio::sync::{RwLock, mpsc};
+
+pub struct Room {
+    pub clients: Vec<mpsc::UnboundedSender<String>>,
+    pub game_started: bool,
+}
+
 #[derive(Clone)]
 pub struct AppState {
     pub db: PgPool,
+    pub rooms: Arc<RwLock<HashMap<String, Room>>>,
 }
 
 pub async fn connect_db(database_url: &str) -> PgPool {
@@ -77,6 +87,7 @@ pub async fn setup_database(db: &PgPool) {
         duration_years INTEGER NOT NULL CHECK (duration_years > 0),
         public_private BOOLEAN NOT NULL,
         password TEXT,
+        started BOOLEAN NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
         "

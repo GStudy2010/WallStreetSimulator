@@ -61,7 +61,7 @@ use axum::{
 struct ErrorResponse {
     message: String,
 }
-
+#[derive(Debug)]
 pub enum ApiError {
     Unauthorized,
     InvalidToken,

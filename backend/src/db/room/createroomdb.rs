@@ -22,9 +22,10 @@ pub async fn createroomdb(
             current_players,
             start_money,
             duration_years,
-            public_private
+            public_private,
+            started
         )
-        VALUES ($1, $2, $3, 0, $4, $5, $6)
+        VALUES ($1, $2, $3, 0, $4, $5, $6, false)
         "#
         )
             .bind(user_id)
@@ -39,7 +40,7 @@ pub async fn createroomdb(
         let mut p: String = String::new();
         match password {
             Some(s) => p = s,
-            None => println!("NIGGA"),
+            None => println!("   a"),
         }
         sqlx::query(
             r#"
@@ -51,9 +52,10 @@ pub async fn createroomdb(
             start_money,
             duration_years,
             public_private,
-            password
+            password,
+            started
         )
-        VALUES ($1, $2, $3, 0, $4, $5, $6, $7)
+        VALUES ($1, $2, $3, 0, $4, $5, $6, $7, false)
         "#
         )
             .bind(user_id)
