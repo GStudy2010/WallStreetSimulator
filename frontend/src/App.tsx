@@ -9,6 +9,7 @@ import UserPage from './UserPage'
 import CreatePrivate from './CreatePrivate'
 import CreatePublic from './CreatePublic'
 import RoomPage from './RoomPage'
+import Gamepage from './GamePage'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
             ? <UserPage />
             : <HomePage />
         } />
+        <Route path="/app/game/:gameId" element={<Gamepage />}/>
         <Route path="/app/createAccount" element={<CreateAccount />}/>
         <Route path="/app/loginUser" element={<LoginUser />}/>
         <Route path="/app/createPrivate" element={<CreatePrivate />}/>

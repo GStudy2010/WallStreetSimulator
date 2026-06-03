@@ -1,6 +1,10 @@
+use std::collections::HashMap;
+use std::hash::Hash;
+use std::sync::Arc;
 use std::net::SocketAddr;
 use axum::routing::{post, get};
 use axum::Router;
+use tokio::sync::{mpsc, RwLock};
 use tower_http::cors::CorsLayer;
 use tower_http::services::{ServeDir, ServeFile};
 mod db;
@@ -18,6 +22,7 @@ async fn main() {
     let pool = db::user::init::connect_db(&database_url).await;
     let state = db::user::init::AppState {
         db: pool,
+        rooms: Arc::new(RwLock::new(HashMap::new())),
     };
     db::user::init::setup_database(&state.db).await;
     let react_service = ServeDir::new("../frontend/dist")
@@ -33,8 +38,11 @@ async fn main() {
         .route("/api/verifyemail/{token}", get(handlers::user::verifyemail::verifyemail))
         .route("/api/createroom", post(handlers::room::createroom::create_room_handler))
         .route("/api/joinroom", post(handlers::room::joinroom::join_room_handler))
+        .route("/api/query/idbyauthtoken", get(handlers::queries::queryidbyauthtoken::queryidbyauthtoken))
         .route("/api/query/rooms", get(handlers::queries::queryroom::query_room_handler))
         .route("/api/query/usersinroom", get(handlers::queries::queryuserinroom::query_user_in_room_handler))
+        .route("/api/startgame", post(handlers::room::start_game_handler::start_game))
+        .route("/ws", get(handlers::room::ws_handler::ws_handler))
         .with_state(state)
         .layer(CorsLayer::permissive());
     let addr = SocketAddr::from(([127, 0, 0, 1], 42069));
