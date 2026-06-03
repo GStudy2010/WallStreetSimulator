@@ -62,6 +62,7 @@ pub async fn start_game(
             client.send(message.clone()).is_ok()
         });
     }
+    println!("GOT HERE");
     match db::room::startroomdb::start_game(&state.db, room_id).await {
         Ok(()) => {
             (StatusCode::OK, Json(resp))
